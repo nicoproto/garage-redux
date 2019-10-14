@@ -1,64 +1,70 @@
+// EXTERNAL IMPORTS
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
 import { reduxForm, Field } from 'redux-form';
+
+// INTERNAL IMPORTS
 import { createCar } from '../actions';
+import Aside from '../components/aside';
 
 class CarsNew extends Component {
   onSubmit = (values) => {
-    this.props.addCar(this.props.garage, values, () => {
+    this.props.createCar(this.props.garage, values, () => {
       this.props.history.push('/');
+      // HISTORY.PUSH REDIRECTS TO HOME PAGE
     });
   }
 
-  renderField(field) {
+  // REFACTORED
+  renderInput = (htmlFor, label, name, placeholder) => {
     return (
       <div className="form-group">
-        <label>{field.label}</label>
-        <input
+        <label htmlFor={htmlFor}>
+          {label}
+        </label>
+        <Field
+          name={name}
+          type="text"
+          placeholder={placeholder}
+          component="input"
           className="form-control"
-          type={field.type}
-          {...field.input}
         />
       </div>
     );
   }
 
-  render() {
-    return (
+  render () {
+    return [
+      <Aside key="aside" garage={this.props.garage}>
+        <Link to="/">Back to my garage</Link>
+      </Aside>,
       <div>
         <form onSubmit={this.props.handleSubmit(this.onSubmit)}>
-          <Field
-            label="Title"
-            name="title"
-            type="text"
-            component={this.renderField}
-          />
-
-          <input type="text" />
-          <input type="text" />
-          <input type="text" />
+          {this.renderInput("InputBrand", "Brand", "brand", "Aston Martin")}
+          {this.renderInput("InputModel", "Model", "model", "DB Mark III")}
+          {this.renderInput("InputOwner", "Owner", "owner", "James Bond")}
+          {this.renderInput("InputPlate", "Plate", "plate", "DB Mark III")}
+          <button type="submit">Add car</button>
         </form>
       </div>
-    );
+    ];
   }
 }
 
-export default reduxForm({ form: 'newCarForm' })(
-  connect(null, { createCar })(CarsNew)
+function mapStateToProps(state) {
+  return {
+    garage: state.garage
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ createCar }, dispatch);
+}
+
+export default reduxForm({
+  form: 'newCarForm'
+})(
+  connect(mapStateToProps, mapDispatchToProps)(CarsNew)
 );
-
-
-
-
-<form onSubmit={this.props.handleSubmit(this.onSubmit)}> <Field
-  label="Title"
-  name="title"
-  type="text" component={this.renderField}
-  />
-  <label htmlFor="content">Content</label> <Field
-  className="form-control" label="Content" name="content" component="textarea" rows="8"
-  />
-  <button className="btn btn-primary" type="submit" disabled={this.props.pristine || this.props.submitting}>
-      Create Post
-    </button>
-</form>

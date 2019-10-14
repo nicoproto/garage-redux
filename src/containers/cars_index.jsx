@@ -1,9 +1,12 @@
+// EXTERNAL IMPORTS
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 
+// INTERNAL IMPORTS
 import { fetchCars } from '../actions/index';
+import Aside from '../components/aside';
 
 class CarsIndex extends Component {
   componentDidMount() {
@@ -13,22 +16,40 @@ class CarsIndex extends Component {
   renderCars() {
     return this.props.cars.map((car) => {
       return (
-        <Link to={`/${car.id}`} key={car.id}>
-          <div>
-            <h3>{car.brand} - {car.model}</h3>
-            <p>{car.plate}</p>
+        <div key={car.id} className="car-smallad">
+          <Link to={`/cars/${car.id}`} key={car.id} />
+          <img className="car-logo" src="assets/images/logo_square.svg" alt="square logo" />
+          <div className="car-details">
+            <span>{car.brand} - {car.model}</span>
+            <ul>
+              <li><strong>Owner:</strong> {car.owner}</li>
+            </ul>
           </div>
-        </Link>
+        </div>
       );
     });
   }
 
   render() {
-    return (
-      <ul>
+    // CHECK IF THERE ARE NO CARS
+    if (this.props.cars.length === 0) {
+      // USING AN ARRAY SO I DONT NEED TO WRAP IT INTO A DIV
+      return [
+        <Aside key="aside" garage={this.props.garage}>
+          <Link to="/cars/new">Add a car</Link>
+        </Aside>,
+        <div className="no-car" key="nocar">No car yet</div>
+      ];
+    }
+
+    return [
+      <Aside key="aside" garage={this.props.garage}>
+        <Link to="/cars/new">Add a car</Link>
+      </Aside>,
+      <div className="list-container" key="cars">
         {this.renderCars()}
-      </ul>
-    );
+      </div>
+    ];
   }
 }
 
